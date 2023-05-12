@@ -16,6 +16,7 @@
           template : '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
           abstract: true,
           controller: 'TablesPageCtrl',
+          controllerAs: 'vm',
           title: 'Tables',
           sidebarMeta: {
             icon: 'ion-grid',
@@ -28,14 +29,7 @@
           sidebarMeta: {
             order: 0,
           },
-        }).state('tables.smart', {
-          url: '/smart',
-          templateUrl: 'app/pages/tables/smart/tables.html',
-          title: 'Smart Tables',
-          sidebarMeta: {
-            order: 100,
-          },
-        });
+        })
     $urlRouterProvider.when('/tables','/tables/basic');
   }
 
