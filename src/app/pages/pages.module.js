@@ -7,16 +7,16 @@
 
   angular.module('BlurAdmin.pages', [
     'ui.router',
+    'BlurAdmin.pages.home',
+    'BlurAdmin.pages.tableData'
 
-    'BlurAdmin.pages.dashboard',
-    'BlurAdmin.pages.tables'
 
   ])
       .config(routeConfig);
 
   /** @ngInject */
   function routeConfig($urlRouterProvider, baSidebarServiceProvider) {
-    $urlRouterProvider.otherwise('/dashboard');
+    $urlRouterProvider.otherwise('/home');
 
   }
 
