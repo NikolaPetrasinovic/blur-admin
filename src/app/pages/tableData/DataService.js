@@ -94,25 +94,26 @@
         });
     }
 
-    function getAirQualityData(latitude, longitude ) {
+    function getAirQualityData(latitude, longitude) {
       return $http({
         method: "GET",
         url: "https://api.api-ninjas.com/v1/airquality",
         headers: { "X-Api-Key": apiKey },
-        params: { lat: latitude,lon: longitude },
+        params: { lat: latitude, lon: longitude },
       })
-       .then(function (response) {
-          var airQualityData = response.data;
-          console.log(airQualityData);
-          // var cityData = {
-          //   concentration: airQualityData.concentration,
-          // };
-          // console.log("Latitude:", latitude, "Longitude:", longitude); 
-          return {
-            concentration: airQualityData.concentration
-          };
+        .then(function (response) {
+          var airQualityData = response.data[0];
+          var cityData = {};
+    
+          if (airQualityData && airQualityData.concentration) {
+            cityData.concentration = airQualityData.concentration;
+          } else {
+            cityData.concentration = "No data found";
+          }
+    
+          return cityData;
         })
-       .catch(function (error) {
+        .catch(function (error) {
           console.error("Error: ", error);
           var cityData = {
             concentration: "No data found",
@@ -120,6 +121,8 @@
           return cityData;
         });
     }
+    
+    
 
     function getWorldTimeDataCity(city) {
       return $http({
@@ -183,15 +186,13 @@
         headers: { "X-Api-Key": apiKey },
         params: { city: city },
       })
-        .then(function (response) {
-          var airQualityData = response.data;
-          // var cityData = {
-          //   concentration: airQualityData.concentration,
-          // };
-          return {
-            concentration: airQualityData.concentration
-          };
-        })
+      .then(function (response) {
+        var airQualityData = response.data[0]; // Get the first item from the response array
+        var cityData = {
+          concentration: airQualityData.concentration,
+        };
+        return cityData;
+      })
         .catch(function (error) {
           console.error("Error: ", error);
 
