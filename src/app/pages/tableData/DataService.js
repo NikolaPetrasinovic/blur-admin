@@ -25,12 +25,11 @@
         params: { city: city },
       })
         .then(function (response) {
-          var geocodingData = response.data;
-          var longitude = geocodingData.longitude;
-          var latitude = geocodingData.latitude;
+          var geocodingData = response.data[0];
+          console.log(geocodingData);
           return {
-            longitude: longitude,
-            latitude: latitude,
+            latitude: geocodingData.latitude,
+            longitude: geocodingData.longitude,
           };
         })
         .catch(function (error) {
@@ -39,21 +38,22 @@
         });
     }
 
-    function getWorldTimeData(longitude, latitude) {
+    function getWorldTimeData(latitude, longitude ) {
       return $http({
         method: "GET",
         url: "https://api.api-ninjas.com/v1/worldtime",
         headers: { "X-Api-Key": apiKey },
-        params: { lon: longitude, lat: latitude },
+        params: { lat: latitude,lon: longitude},
       })
-        .then(function (response) {
+       .then(function (response) {
           var worldTime = response.data;
           var cityData = {
             datetime: worldTime.datetime,
           };
+          // console.log("Latitude:", latitude, "Longitude:", longitude); 
           return cityData;
         })
-        .catch(function (error) {
+       .catch(function (error) {
           console.error("Error: ", error);
           var cityData = {
             datetime: "No data found",
@@ -62,14 +62,14 @@
         });
     }
 
-    function getWeatherData(longitude, latitude) {
+    function getWeatherData(latitude, longitude) {
       return $http({
         method: "GET",
         url: "https://api.api-ninjas.com/v1/weather",
         headers: { "X-Api-Key": apiKey },
-        params: { lon: longitude, lat: latitude },
+        params: { lat: latitude,lon: longitude },
       })
-        .then(function (response) {
+       .then(function (response) {
           var weatherData = response.data;
           var cityData = {
             humidity: weatherData.humidity,
@@ -78,9 +78,10 @@
             sunrise: new Date(weatherData.sunrise * 1000).toLocaleTimeString(),
             sunset: new Date(weatherData.sunset * 1000).toLocaleTimeString(),
           };
+          // console.log("Latitude:", latitude, "Longitude:", longitude); 
           return cityData;
         })
-        .catch(function (error) {
+       .catch(function (error) {
           console.error("Error: ", error);
           var cityData = {
             humidity: "No data found",
@@ -93,21 +94,25 @@
         });
     }
 
-    function getAirQualityData(longitude, latitude) {
+    function getAirQualityData(latitude, longitude ) {
       return $http({
         method: "GET",
         url: "https://api.api-ninjas.com/v1/airquality",
         headers: { "X-Api-Key": apiKey },
-        params: { lon: longitude, lat: latitude },
+        params: { lat: latitude,lon: longitude },
       })
-        .then(function (response) {
+       .then(function (response) {
           var airQualityData = response.data;
-          var cityData = {
-            concentration: airQualityData.concentration,
+          console.log(airQualityData);
+          // var cityData = {
+          //   concentration: airQualityData.concentration,
+          // };
+          // console.log("Latitude:", latitude, "Longitude:", longitude); 
+          return {
+            concentration: airQualityData.concentration
           };
-          return cityData;
         })
-        .catch(function (error) {
+       .catch(function (error) {
           console.error("Error: ", error);
           var cityData = {
             concentration: "No data found",
@@ -125,10 +130,10 @@
       })
         .then(function (response) {
           var worldTime = response.data;
-          var cityObj = {
+          var cityData = {
             datetime: worldTime.datetime,
           };
-          return cityObj;
+          return cityData;
         })
         .catch(function (error) {
           console.error("Error: ", error);
@@ -148,7 +153,7 @@
       })
         .then(function (response) {
           var weatherData = response.data;
-          var cityObj = {
+          var cityData = {
             temp: weatherData.temp,
             humidity: weatherData.humidity,
             minTemp: weatherData.min_temp,
@@ -156,7 +161,7 @@
             sunrise: new Date(weatherData.sunrise * 1000).toLocaleTimeString(),
             sunset: new Date(weatherData.sunset * 1000).toLocaleTimeString(),
           };
-          return cityObj;
+          return cityData;
         })
         .catch(function (error) {
           console.error("Error: ", error);
@@ -180,10 +185,12 @@
       })
         .then(function (response) {
           var airQualityData = response.data;
-          var cityObj = {
-            concentration: airQualityData.concentration,
+          // var cityData = {
+          //   concentration: airQualityData.concentration,
+          // };
+          return {
+            concentration: airQualityData.concentration
           };
-          return cityObj;
         })
         .catch(function (error) {
           console.error("Error: ", error);
@@ -195,19 +202,18 @@
         });
     }
 
-    function triggerOtherFunctions(city) {
+    function handleRequests(city) {
       return getGeocodingData(city)
         .then(function (response) {
-          var geocodingData = response.data;
-          var longitude = geocodingData.longitude;
-          var latitude = geocodingData.latitude;
-
+          var latitude = response.latitude;
+          var longitude = response.longitude;
+    
           var promises = [
-            getWorldTimeData(longitude, latitude),
-            getWeatherData(longitude, latitude),
-            getAirQualityData(longitude, latitude),
+            getWorldTimeData(latitude, longitude),
+            getWeatherData(latitude, longitude),
+            getAirQualityData(latitude, longitude),
           ];
-
+    
           return $q.all(promises);
         })
         .then(function (results) {
@@ -246,7 +252,7 @@
     }
 
     var promises = cities.map(function (city) {
-      return triggerOtherFunctions(city);
+      return handleRequests(city);
     });
 
     $q.all(promises)
