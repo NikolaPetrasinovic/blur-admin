@@ -1,4 +1,7 @@
 <div class="vertical-scroll" ng-controller="TableDataPageCtrl as vm">
+  <div class="spinner" ng-show="vm.loadingData">
+    <i class="fa fa-spinner fa-spin"></i> Loading...
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
