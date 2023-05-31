@@ -26,7 +26,7 @@
       })
         .then(function (response) {
           var geocodingData = response.data[0];
-          console.log(geocodingData);
+          // console.log(geocodingData);
           return {
             latitude: geocodingData.latitude,
             longitude: geocodingData.longitude,
@@ -94,7 +94,7 @@
         });
     }
 
-    function getAirQualityData(latitude, longitude) {
+    function getAirQualityData(longitude, latitude) {
       return $http({
         method: "GET",
         url: "https://api.api-ninjas.com/v1/airquality",
@@ -102,15 +102,12 @@
         params: { lat: latitude, lon: longitude },
       })
         .then(function (response) {
-          var airQualityData = response.data[0];
-          var cityData = {};
-    
-          if (airQualityData && airQualityData.concentration) {
-            cityData.concentration = airQualityData.concentration;
-          } else {
-            cityData.concentration = "No data found";
-          }
-    
+          var airQualityData = response.data;
+          var coData = airQualityData.CO;
+          var concentration = coData ? coData.concentration : "No data found";
+          var cityData = {
+            concentration: concentration,
+          };
           return cityData;
         })
         .catch(function (error) {
@@ -121,6 +118,7 @@
           return cityData;
         });
     }
+    
     
     
 
@@ -186,22 +184,23 @@
         headers: { "X-Api-Key": apiKey },
         params: { city: city },
       })
-      .then(function (response) {
-        var airQualityData = response.data[0]; // Get the first item from the response array
-        var cityData = {
-          concentration: airQualityData.concentration,
-        };
-        return cityData;
-      })
+        .then(function (response) {
+          var airQualityData = response.data;
+          var coData = airQualityData.CO;
+          var concentration = coData ? coData.concentration : "No data found";
+          var cityData = {
+            concentration: concentration,
+          };
+          return cityData;
+        })
         .catch(function (error) {
           console.error("Error: ", error);
-
           var cityData = {
             concentration: "No data found",
           };
           return cityData;
         });
-    }
+    }    
 
     function handleRequests(city) {
       return getGeocodingData(city)
