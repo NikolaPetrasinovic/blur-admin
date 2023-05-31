@@ -247,6 +247,10 @@
               concentration: results[2].concentration,
             };
             vm.cityData.push(cityData);
+          })
+          .catch(function (error) {
+            console.error("Error: ", error);
+            throw error;
           });
         });
     }
