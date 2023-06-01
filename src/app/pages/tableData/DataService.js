@@ -12,7 +12,7 @@
     var cities = [
       "london",
       "new york",
-      "tokyo",
+      "cairo",
       "paris",
       "madrid",
       "belgrade",
